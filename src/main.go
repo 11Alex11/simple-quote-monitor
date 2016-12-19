@@ -11,6 +11,10 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"runtime"
+
+	"osx"
+	"windows"
 
 	"golang.org/x/net/html"
 )
@@ -53,7 +57,6 @@ func main() {
 	symbol = strings.ToUpper(symbol)
 	url := fmt.Sprintf("https://www.google.com/finance?q=%s:%s", exchange, symbol)
 	errorAlert := exec.Command("terminal-notifier", "-title", "Monitor exits alert", "-message", "Please restart")
-
 	// Ping and get the price data in every 30 - 40 seconds
 	for {
 		// Get the response from google finance search
@@ -118,10 +121,17 @@ func main() {
 			} else {
 				title = "Price rise alert"
 			}
-			message := fmt.Sprintf("The stock %s's price is now $%f\n", symbol, price)
-			alert := exec.Command("terminal-notifier", "-title", title, "-message", message)
+			message := fmt.Sprintf("The price of %s is now $%f\n", symbol, price)
 			fmt.Printf(message)
-			alert.Run()
+			// Notification management based on Operating System
+			// Currently supports Windows 10 and OSX Mountain Lion and above
+			if runtime.GOOS=="windows" {
+				windows.NotifyWindows(title,message)
+			} else if runtime.GOOS=="darwin"{
+				osx.NotifyOSX(title,message)
+			} else if runtime.GOOS=="linux"{
+				// TODO
+			}
 		}
 
 		fmt.Printf("Price is now %f\n", price)
@@ -130,6 +140,7 @@ func main() {
 		time.Sleep(time.Duration((30000 + rand.Intn(11)*1000)) * time.Millisecond)
 	}
 }
+
 
 // This will print out the flag options
 func man() {
