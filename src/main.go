@@ -15,6 +15,7 @@ import (
 
 	"osx"
 	"windows"
+	"linux"
 
 	"golang.org/x/net/html"
 )
@@ -130,7 +131,7 @@ func main() {
 			} else if runtime.GOOS=="darwin"{
 				osx.NotifyOSX(title,message)
 			} else if runtime.GOOS=="linux"{
-				// TODO
+				linux.NotifyLinux(title,message)
 			}
 		}
 
